@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-@ImportResource("classpath:applicationContext.xml")
 public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;

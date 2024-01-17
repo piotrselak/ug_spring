@@ -50,8 +50,6 @@ public class BookService {
             books = books
                     .filter(book -> {
                         var names = book.getAuthors().stream().map(Author::getName).toList();
-//                        System.out.println(names);
-//                        System.out.println(Objects.equals(names.get(0), authors.get(0)));
                         return CollectionUtils.containsAny(names, authors);
                     });
         }
