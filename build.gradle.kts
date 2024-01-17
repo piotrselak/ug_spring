@@ -26,7 +26,7 @@ dependencies {
     implementation("io.springfox:springfox-swagger-ui:3.0.0")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("com.h2database:h2")
+    implementation("org.postgresql:postgresql")
     implementation("org.springframework.boot:spring-boot-starter-security")
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")

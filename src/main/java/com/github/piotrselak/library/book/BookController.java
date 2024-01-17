@@ -7,6 +7,7 @@ import com.github.piotrselak.library.comment.CommentDto;
 import com.github.piotrselak.library.comment.CreateCommentDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -80,7 +81,7 @@ public class BookController {
                                                   @RequestBody CreateCommentDto commentDto) {
         var comment = new CommentDto();
         comment.setText(commentDto.getText());
-        comment.setAuthor(""); // TODO logic later
+        comment.setAuthor(SecurityContextHolder.getContext().getAuthentication().getName());
 
         bookService.addCommentToBook(Long.parseLong(id), comment);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
