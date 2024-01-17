@@ -2,10 +2,12 @@ package com.github.piotrselak.library.stats;
 
 import com.github.piotrselak.library.book.domain.Book;
 import com.github.piotrselak.library.book.repository.BookRepository;
+import com.github.piotrselak.library.user.domain.User;
 import com.github.piotrselak.library.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
+import java.util.List;
 
 @Service
 public class StatsService {
@@ -17,18 +19,16 @@ public class StatsService {
         this.bookRepository = bookRepository;
     }
 
-    public Stats getStats() {
-        var books = bookRepository.findAll();
-        var usersByReservations = userRepository.findAll().stream()
+    public List<User> getUsersByReservationsStats() {
+        return userRepository.findAll().stream()
                 .sorted(Comparator.comparingInt(user -> user.getReservation().size()))
                 .toList();
-        var booksByVotes = books
+    }
+
+    public List<Book> getBooksByVotesStats() {
+        return bookRepository.findAll()
                 .stream()
                 .sorted(Comparator.comparingInt(Book::getVotes))
                 .toList();
-        Stats stats = new Stats();
-        stats.setUsersByReservations(usersByReservations);
-        stats.setBooksByVotes(booksByVotes);
-        return stats;
     }
 }

@@ -80,7 +80,7 @@ public class BookController {
                                                   @RequestBody CreateCommentDto commentDto) {
         var comment = new CommentDto();
         comment.setText(commentDto.getText());
-        comment.setAuthor(""); // logic later
+        comment.setAuthor(""); // TODO logic later
 
         bookService.addCommentToBook(Long.parseLong(id), comment);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
