@@ -3,6 +3,8 @@ package com.github.piotrselak.library.book;
 import com.github.piotrselak.library.book.domain.Book;
 import com.github.piotrselak.library.book.domain.RatingDto;
 import com.github.piotrselak.library.book.service.BookService;
+import com.github.piotrselak.library.comment.CommentDto;
+import com.github.piotrselak.library.comment.CreateCommentDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -62,4 +64,25 @@ public class BookController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @GetMapping("/{id}/comment")
+    public ResponseEntity<List<CommentDto>> getCommentsForBook(@PathVariable String id) {
+        var book = bookService.findBookById(Long.parseLong(id));
+
+        if (book.isEmpty())
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        var comments = bookService.findCommentsByBook(book.get());
+
+        return new ResponseEntity<>(comments, HttpStatus.OK);
+    }
+
+    @PostMapping("/{id}/comment")
+    public ResponseEntity<Void> addCommentForBook(@PathVariable String id,
+                                                  @RequestBody CreateCommentDto commentDto) {
+        var comment = new CommentDto();
+        comment.setText(commentDto.getText());
+        comment.setAuthor(""); // logic later
+
+        bookService.addCommentToBook(Long.parseLong(id), comment);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }

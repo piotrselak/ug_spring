@@ -6,24 +6,28 @@ import com.github.piotrselak.library.book.domain.Genre;
 import com.github.piotrselak.library.book.repository.AuthorRepository;
 import com.github.piotrselak.library.book.repository.BookRepository;
 import com.github.piotrselak.library.book.repository.GenreRepository;
+import com.github.piotrselak.library.comment.Comment;
+import com.github.piotrselak.library.comment.CommentDto;
+import com.github.piotrselak.library.comment.CommentRepository;
+import com.github.piotrselak.library.user.domain.User;
+import com.github.piotrselak.library.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class BookService {
     private final BookRepository bookRepository;
-    private final AuthorRepository authorRepository;
-    private final GenreRepository genreRepository;
+    private final CommentRepository commentRepository;
+    private final UserRepository userRepository;
 
-    public BookService(BookRepository bookRepository, AuthorRepository authorRepository, GenreRepository genreRepository) {
+    public BookService(BookRepository bookRepository, AuthorRepository authorRepository, GenreRepository genreRepository, CommentRepository commentRepository, UserRepository userRepository) {
         this.bookRepository = bookRepository;
-        this.authorRepository = authorRepository;
-        this.genreRepository = genreRepository;
+        this.commentRepository = commentRepository;
+        this.userRepository = userRepository;
     }
 
     public List<Book> getMostPopularBooks() {
@@ -32,7 +36,7 @@ public class BookService {
                 .stream()
                 .sorted((book, other) -> {
                     var rating = (float) book.getRate() / (float) book.getVotes();
-                    var otherRating =  (float) other.getRate() / (float) other.getVotes();
+                    var otherRating = (float) other.getRate() / (float) other.getVotes();
                     return Float.compare(otherRating, rating);
                 })
                 .limit(5)
@@ -72,5 +76,27 @@ public class BookService {
         book.setRate(book.getRate() + rating);
         book.setVotes(book.getVotes() + 1);
         bookRepository.save(book);
+    }
+
+    public List<CommentDto> findCommentsByBook(Book book) {
+        return commentRepository
+                .findCommentsByBook(book)
+                .stream()
+                .map(CommentDto::fromEntity)
+                .toList();
+    }
+
+    public void addCommentToBook(Long bookId, CommentDto commentDto) {
+        User user = null;
+        if (!Objects.equals(commentDto.getAuthor(), "anonymousUser"))
+            user = userRepository.findByName(commentDto.getAuthor());
+
+        Book book = bookRepository.findById(bookId).get();
+
+        Comment comment = new Comment();
+        comment.setBook(book);
+        comment.setText(commentDto.getText());
+        comment.setAuthor(user);
+        commentRepository.save(comment);
     }
 }
